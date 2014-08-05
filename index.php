@@ -1,30 +1,30 @@
 <?php
-include('DataBase.php'); //Êý¾Ý²Ù×÷Àà
-include('BaseType.php'); //»ù´¡Êý¾ÝÀàÐÍ
-include('ProException.php'); //Ö´ÐÐÒì³£
-include('Process.php'); //Âß¼­´¦ÀíÎÄ¼þ
+include('DataBase.php'); //æ•°æ®æ“ä½œç±»
+include('BaseType.php'); //åŸºç¡€æ•°æ®ç±»åž‹
+include('ProException.php'); //æ‰§è¡Œå¼‚å¸¸
+include('Process.php'); //é€»è¾‘å¤„ç†æ–‡ä»¶
 
-//¶¨ÒåÔÊÐíÖ´ÐÐµÄfunction£¬keyÎª·½·¨Ãû£¬valueÎªRequest method(GET/POST)
+//å®šä¹‰å…è®¸æ‰§è¡Œçš„functionï¼Œkeyä¸ºæ–¹æ³•åï¼Œvalueä¸ºRequest method(GET/POST)
 $allow_func  = array("login"=>"GET|POST", "reg"=>"GET|POST", "token"=>"GET|POST", "profile"=>"GET|POST", "friends"=>"GET|POST");
-//Êý¾Ý¿âÁ¬½Ó
+//æ•°æ®åº“è¿žæŽ¥
 define("DB_DNS","mysql:host=192.168.151.3;dbname=demoserver");
 define("DB_USER","developer");
 define("DB_PASSWORD","1234%^&*");
 
-//ÈÚÔÆAPIµØÖ·
+//èžäº‘APIåœ°å€
 define("RONGCLOUD_API_URL","http://bj.rongcloud.net:9000/reg.json");
-//ÈÚÔÆAPP KEY
+//èžäº‘APP KEY
 define("RONGCLOUD_APP_KEY","e0x9wycfx7flq");
-//ÈÚÔÆAPP SECRET
+//èžäº‘APP SECRET
 define("RONGCLOUD_APP_SECRET","TESTSECRET");
 
-//»ñÈ¡functionÃû³Æ
+//èŽ·å–functionåç§°
 $func = substr($_SERVER["PHP_SELF"], strlen($_SERVER["URL"]) + 1);
-//²éÕÒ²¢Ö´ÐÐfunction
+//æŸ¥æ‰¾å¹¶æ‰§è¡Œfunction
 if (isset($allow_func) && array_key_exists($func, $allow_func) && stripos($allow_func[$func], $_SERVER['REQUEST_METHOD'])!== false && function_exists($func)){
 	$func_ref = new ReflectionFunction($func);
 	$params = array(); 
-	//²ÎÊýÌî³ä
+	//å‚æ•°å¡«å……
 	foreach ($func_ref->getParameters() as $param) {
 		$param_key = $param->getName();
 		if (isset($_REQUEST[$param_key])) {
@@ -51,7 +51,7 @@ if (isset($allow_func) && array_key_exists($func, $allow_func) && stripos($allow
 			}
 		}
 	}
-	//Ö´ÐÐfunction
+	//æ‰§è¡Œfunction
 	try {
 		$result = call_user_func_array($func, $params);
 	} 

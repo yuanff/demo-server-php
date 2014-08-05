@@ -1,6 +1,6 @@
 <?php
 /*
-ÓÃ»§µÇÂ¼
+ç”¨æˆ·ç™»å½•
 */
 function login(Email $email, $password){
 	$db = new DataBase(DB_DNS, DB_USER, DB_PASSWORD);
@@ -9,7 +9,7 @@ function login(Email $email, $password){
 		if ($password != $user["password"]) {
 			throw new ProException("password is error", 103);
 		} else {
-			// ¿ìËÙÊµÏÖ£¬ÔÝ²»¿¼ÂÇ°²È«
+			// å¿«é€Ÿå®žçŽ°ï¼Œæš‚ä¸è€ƒè™‘å®‰å…¨
 			setcookie("user_id", $user['id'], time() + 36000);
 			unset($user['password']);
 			return $user;
@@ -20,7 +20,7 @@ function login(Email $email, $password){
 }
 
 /*
-ÓÃ»§×¢²á
+ç”¨æˆ·æ³¨å†Œ
 */
 function reg(Email $email, $username, $password){
 	$db = new DataBase(DB_DNS, DB_USER, DB_PASSWORD);
@@ -33,7 +33,7 @@ function reg(Email $email, $username, $password){
 }
 
 /*
-»ñÈ¡token
+èŽ·å–token
 */
 function token(){
 	$db = new DataBase(DB_DNS, DB_USER, DB_PASSWORD);
@@ -59,7 +59,7 @@ function token(){
 }
 
 /*
-»ñÈ¡Ä³ÈËÓÃ»§×ÊÁÏ
+èŽ·å–æŸäººç”¨æˆ·èµ„æ–™
 */
 function profile(Integer $id){
 	$db = new DataBase(DB_DNS, DB_USER, DB_PASSWORD);
@@ -73,7 +73,7 @@ function profile(Integer $id){
 }
 
 /*
-»ñÈ¡È«²¿¸öÈË×ÊÁÏ
+èŽ·å–å…¨éƒ¨ä¸ªäººèµ„æ–™
 */
 function friends(){
 	$db = new DataBase(DB_DNS, DB_USER, DB_PASSWORD);
@@ -81,7 +81,7 @@ function friends(){
 }
 
 /*
-´ÓÈÚÔÆAPIÉÏ½øÐÐÓÃ»§ÊÚÈ¨
+ä»Žèžäº‘APIä¸Šè¿›è¡Œç”¨æˆ·æŽˆæƒ
 */
 function getToken($params,$httpHeader) {
 	$ch = curl_init();
