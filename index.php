@@ -19,9 +19,12 @@ define("RONGCLOUD_APP_KEY","e0x9wycfx7flq");
 define("RONGCLOUD_APP_SECRET","TESTSECRET");
 
 //获取function名称
-$func = substr($_SERVER["PHP_SELF"], strlen($_SERVER["URL"]) + 1);
+if (preg_match("/\w+(?:$|(?=\?))/", $_SERVER["REQUEST_URI"], $matches)) {
+	$func = $matches[0];
+}
+
 //查找并执行function
-if (isset($allow_func) && array_key_exists($func, $allow_func) && stripos($allow_func[$func], $_SERVER['REQUEST_METHOD'])!== false && function_exists($func)){
+if (isset($func) && isset($allow_func) && array_key_exists($func, $allow_func) && stripos($allow_func[$func], $_SERVER['REQUEST_METHOD'])!== false && function_exists($func)){
 	$func_ref = new ReflectionFunction($func);
 	$params = array(); 
 	//参数填充

@@ -1,20 +1,23 @@
 <?php
 abstract class BaseType{
+	public $val;
+
 	public function __construct($val){
 		$this->val=$val;
 	}
-	public $val;
+
 	public function __toString(){
 		return strval($this->val);
 	}
+
 	public function __invoke(){
 		return $this->val;
 	}
 }
 
 final class Integer extends BaseType{
-	public function __construct($val){
-		if(preg_match("/^\d+$/", $val)) {
+	public function __construct($val=0){
+		if(is_int($val) || preg_match("/^\d+$/", $val)) {
 			$val = (int)$val;
 			parent::__construct($val);
 		} else
