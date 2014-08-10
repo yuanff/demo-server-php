@@ -2,7 +2,7 @@
 /*
 用户登录
 */
-function login(Email $email, $password){
+function login(Email $email, String $password){
 	$db = new DataBase(DB_DNS, DB_USER, DB_PASSWORD);
 	$user = $db->fetch("SELECT `id`, `email`, `username`, `portrait`, `password` FROM `user` WHERE `email` = ?", $email);
 	if ($user) {
@@ -22,7 +22,7 @@ function login(Email $email, $password){
 /*
 用户注册
 */
-function reg(Email $email, $username, $password){
+function reg(Email $email, String $username, String $password){
 	$db = new DataBase(DB_DNS, DB_USER, DB_PASSWORD);
 	if ($db->fetchColumn("SELECT count(*) FROM `user` WHERE `email` = ?", $email) == 0) {
 		$portrait = 'http://www.gravatar.com/avatar/'.md5(strtolower(trim($email))).'?s=82&d=wavatar';
@@ -40,9 +40,7 @@ function token(){
 	$user = $db->fetch("SELECT `id`, `email`, `username`, `portrait` FROM `user` WHERE `id` = ?", $_COOKIE['user_id']);
 
 	if($user) {
-		$params = array('userId'=>$user['id'], 'name'=>$user['username'], 'portraitUri'=>$user['portrait']);
-		$httpHeader = array('appKey:'.RONGCLOUD_APP_KEY,'appSecret:'.RONGCLOUD_APP_SECRET);
-		$token = getToken($params, $httpHeader);
+		$token = getToken($user['id'], $user['username'], $user['portrait']);
 		if (!$token) {
 			throw new Exception("API Server Error");
 		}
@@ -81,15 +79,15 @@ function friends(){
 }
 
 /*
-从融云API上进行用户授权
+从融云API上进行用户授权，并获取token
 */
-function getToken($params,$httpHeader) {
+function getToken($id, $username, $portrait) {
 	$ch = curl_init();
 	
 	curl_setopt($ch, CURLOPT_URL, RONGCLOUD_API_URL);
 	curl_setopt($ch, CURLOPT_POST, 1);
-	curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
-	curl_setopt($ch, CURLOPT_HTTPHEADER, $httpHeader);
+	curl_setopt($ch, CURLOPT_POSTFIELDS, array('userId'=>$id, 'name'=>$username, 'portraitUri'=>$portrait));
+	curl_setopt($ch, CURLOPT_HTTPHEADER, array('appKey:'.RONGCLOUD_APP_KEY,'appSecret:'.RONGCLOUD_APP_SECRET));
 	curl_setopt($ch, CURLOPT_HEADER, false);
 	curl_setopt($ch, CURLOPT_TIMEOUT, 30);
 	curl_setopt($ch, CURLOPT_DNS_USE_GLOBAL_CACHE, false);
