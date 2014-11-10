@@ -25,6 +25,16 @@ final class Integer extends BaseType{
 	}
 }
 
+final class String extends BaseType{
+	public function __construct($val){
+		$val = trim($val);
+		if(strlen($val) > 0) {
+			parent::__construct($val);
+		} else
+			throw new Exception("this value is Empty");
+	}
+}
+
 final class Email extends BaseType{
 	public function __construct($val){
 		$val = trim($val);
@@ -35,12 +45,12 @@ final class Email extends BaseType{
 	}
 }
 
-final class String extends BaseType{
+final class Mobile extends BaseType{
 	public function __construct($val){
 		$val = trim($val);
-		if(strlen($val) > 0) {
+		if(preg_match("/^1\d{10}$/", $val)) {
 			parent::__construct($val);
 		} else
-			throw new Exception("this value is Empty");
+			throw new Exception("this value is not Mobile");
 	}
 }

@@ -10,7 +10,7 @@ class DataBase {
 	private $dbh;
 
 	function __construct($dsn, $user, $password){
-	   $this->dbh = new PDO($dsn, $user, $password);
+	   $this->dbh = new PDO($dsn, $user, $password, array(PDO::MYSQL_ATTR_INIT_COMMAND => "set names utf8"));
 	}
 
 	public function fetch($sql){
