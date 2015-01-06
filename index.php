@@ -107,6 +107,7 @@ if (isset($func) && function_exists($func)){
 			}
 		});
 		$result = call_user_func_array($func, $params);
+		header("Access-Control-Allow-Origin: *");
 		if (isset($result)) {
 			echo json_encode(array("code" => 200,"result" => $result));
 		} else {
