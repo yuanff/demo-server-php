@@ -30,7 +30,7 @@ function mobile_exists(Mobile $mobile){
 * 邮箱地址用户登录
 * @UserFunction(method = POST|GET)
 */
-function login(Email $email, String $password){
+function email_login(Email $email, String $password){
 	$db = new DataBase(DB_DNS, DB_USER, DB_PASSWORD);
 	$user = $db->fetch("SELECT `id`, `username`, `portrait`, `passwd` FROM `user` WHERE `email` = ?", $email);
 	if ($user) {
