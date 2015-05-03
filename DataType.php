@@ -25,6 +25,19 @@ final class Integer extends BaseType{
 	}
 }
 
+final class Boolean extends BaseType{
+	public function __construct($val){
+		if(strcasecmp($val,'true') || strcmp($val,'1')) {
+			$val = true;
+			parent::__construct($val);
+		} else if(strcasecmp($val,'false') || strcmp($val,'0')) {
+			$val = false;
+			parent::__construct($val);
+		} else
+			throw new Exception("this value is not bool");
+	}
+}
+
 final class String extends BaseType{
 	public function __construct($val){
 		$val = trim($val);

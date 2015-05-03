@@ -4,7 +4,41 @@ include('DataType.php'); //基础数据类型
 include('ProException.php'); //执行异常
 include('Config.php'); //基本配置文件
 include('UserProcess.php'); //逻辑处理文件, 注：业务流程处理示例参看此文件
+include('GroupProcess.php'); //逻辑处理文件, 注：业务流程处理示例参看此文件
+include('FriendProcess.php'); //逻辑处理文件, 注：业务流程处理示例参看此文件
 include('Annotation.php');//标注
+include('UserAnnotation.php');//标注
+include('ServerAPI.php');//标注
+
+//查找方法标注
+function getAnnotation(Reflector $ref){
+	$doc = $ref->getDocComment();
+	$annotations = array();
+	if ($doc !== false) {
+		$pattern = '/@\s*(\w+)\s*(?:\((.+)\))?/i';
+		if(preg_match($pattern,$doc)) {
+			preg_match_all($pattern, $doc, $annotation_matches);
+			for ($i = 0; $i<count($annotation_matches[0]);$i++){
+				if (class_exists($annotation_matches[1][$i])) {
+					$_class = new $annotation_matches[1][$i]();
+					if ($_class instanceof Annotation){
+						$annotations[$annotation_matches[1][$i]] = $_class;
+						if (!empty($annotation_matches[2][$i]) && preg_match('/^(?:\s*\w+\s*=\s*\w+\s*,?)+$/i', $annotation_matches[2][$i])){
+							preg_match_all('/(\w+)\s*=\s*(\w+)\s*,?/i', $annotation_matches[2][$i], $annotation_param_matches);
+							for ($j=0; $j<count($annotation_param_matches[0]); $j++) {
+								$_property = $annotation_param_matches[1][$j];
+								if(property_exists($_class, $_property)){
+									$_class->$_property = $annotation_param_matches[2][$j];
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return $annotations;
+}
 
 //获取function名称
 if (preg_match("/\w+(?:$|(?=\?))/", $_SERVER["REQUEST_URI"], $matches)) {
@@ -67,31 +101,7 @@ if (isset($func) && function_exists($func)){
 	}
 
 	//查找方法标注
-	$doc = $obj_ref->getDocComment();
-	$annotations = array();
-	if ($doc !== false) {
-		$pattern = '/@\s*(\w+)\s*(?:\((.+)\))?/i';
-		if(preg_match($pattern,$doc)) {
-			preg_match_all($pattern, $doc, $annotation_matches);
-			for ($i = 0; $i<count($annotation_matches[0]);$i++){
-				if (class_exists($annotation_matches[1][$i])) {
-					$_class = new $annotation_matches[1][$i]();
-					if ($_class instanceof Annotation){
-						$annotations[$annotation_matches[1][$i]] = $_class;
-						if (!empty($annotation_matches[2][$i]) && preg_match('/^(?:\s*\w+\s*=\s*\w+\s*,?)+$/i', $annotation_matches[2][$i])){
-							preg_match_all('/(\w+)\s*=\s*(\w+)\s*,?/i', $annotation_matches[2][$i], $annotation_param_matches);
-							for ($j=0; $j<count($annotation_param_matches[0]); $j++) {
-								$_property = $annotation_param_matches[1][$j];
-								if(property_exists($_class, $_property)){
-									$_class->$_property = $annotation_param_matches[2][$j];
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
+	$annotations = getAnnotation($obj_ref);
 
 	//只允许执行标注UserFunction
 	if(!array_key_exists('UserFunction', $annotations)){
@@ -107,6 +117,7 @@ if (isset($func) && function_exists($func)){
 			}
 		});
 		$result = call_user_func_array($func, $params);
+		
 		if (isset($result)) {
 			echo json_encode(array("code" => 200,"result" => $result));
 		} else {

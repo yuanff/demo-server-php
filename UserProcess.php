@@ -5,7 +5,7 @@
 */
 function email_exists(Email $email){
 	$db = new DataBase(DB_DNS, DB_USER, DB_PASSWORD);
-	if ($db->fetchColumn("SELECT count(*) FROM `user` WHERE `email` = ?", $email)!=0) {
+	if ($db->fetchColumn('SELECT count(*) FROM `user` WHERE `email` = ?', $email)!=0) {
 		return true;
 	} else {
 		return false;
@@ -19,7 +19,7 @@ function email_exists(Email $email){
 function mobile_exists(Mobile $mobile){
 	return false;
 	$db = new DataBase(DB_DNS, DB_USER, DB_PASSWORD);
-	if ($db->fetchColumn("SELECT count(*) FROM `user` WHERE `mobile` = ?", $mobile)!=0) {
+	if ($db->fetchColumn('SELECT count(*) FROM `user` WHERE `mobile` = ?', $mobile)!=0) {
 		return true;
 	} else {
 		return false;
@@ -32,12 +32,12 @@ function mobile_exists(Mobile $mobile){
 */
 function email_login(Email $email, String $password){
 	$db = new DataBase(DB_DNS, DB_USER, DB_PASSWORD);
-	$user = $db->fetch("SELECT `id`, `username`, `portrait`, `passwd` FROM `user` WHERE `email` = ?", $email);
+	$user = $db->fetch('SELECT `id`, `username`, `portrait`, `passwd` FROM `user` WHERE `email` = ?', $email);
 	if ($user) {
-		if ($password != $user["passwd"]) {
-			throw new ProException("email or password is error", 103);
-		}/* else if($user["status"] != 1) {
-			throw new ProException("user not Activation ", 105);
+		if ($password != $user['passwd']) {
+			throw new ProException('email or password is error', 103);
+		}/* else if($user['status'] != 1) {
+			throw new ProException('user not Activation ', 105);
 		}*/ else {
 			setUserCredential($user['id']);
 			$user['status'] = 1;
@@ -45,7 +45,7 @@ function email_login(Email $email, String $password){
 			return $user;
 		}
 	} else {
-		throw new ProException("email or password is error", 104);
+		throw new ProException('email or password is error', 104);
 	}
 }
 
@@ -55,19 +55,19 @@ function email_login(Email $email, String $password){
 */
 function mobile_login(Mobile $mobile, String $password){
 	$db = new DataBase(DB_DNS, DB_USER, DB_PASSWORD);
-	$user = $db->fetch("SELECT `id`, `username`, `portrait`, `password`, `status` FROM `user` WHERE `mobile` = ?", $mobile);
+	$user = $db->fetch('SELECT `id`, `username`, `portrait`, `password`, `status` FROM `user` WHERE `mobile` = ?', $mobile);
 	if ($user) {
-		if ($password != $user["password"]) {
-			throw new ProException("email or password is error", 103);
-		} else if($user["status"] != 1) {
-			throw new ProException("user not Activation", 105);
+		if ($password != $user['password']) {
+			throw new ProException('email or password is error', 103);
+		} else if($user['status'] != 1) {
+			throw new ProException('user not Activation', 105);
 		} else {
 			setUserCredential($user['id']);
 			unset($user['password']);
 			return $user;
 		}
 	} else {
-		throw new ProException("email or password is error", 104);
+		throw new ProException('email or password is error', 104);
 	}
 }
 /**
@@ -76,7 +76,7 @@ function mobile_login(Mobile $mobile, String $password){
 * @CheckLogin
 */
 function logout(){
-	setcookie (AUTH_COOKIE_KEY, "", time() - 3600);
+	setcookie (AUTH_COOKIE_KEY, '', time() - 3600);
 }
 
 /**
@@ -85,13 +85,13 @@ function logout(){
 */
 function reg(Email $email,/* Mobile $mobile,*/ String $username, String $password){
 	$db = new DataBase(DB_DNS, DB_USER, DB_PASSWORD);
-	if ($db->fetchColumn("SELECT count(*) FROM `user` WHERE `email` = ?", $email) != 0) {
-		throw new ProException("email $email is exists ", 101);
-	} /*else if($db->fetchColumn("SELECT count(*) FROM `user` WHERE `mobile` = ?", $mobile) != 0) {
-		throw new ProException("mobile $mobile is exists ", 102);
+	if ($db->fetchColumn('SELECT count(*) FROM `user` WHERE `email` = ?', $email) != 0) {
+		throw new ProException('email $email is exists ', 101);
+	} /*else if($db->fetchColumn('SELECT count(*) FROM `user` WHERE `mobile` = ?', $mobile) != 0) {
+		throw new ProException('mobile $mobile is exists ', 102);
 	} */else {
 		$portrait = 'http://www.gravatar.com/avatar/'.md5(strtolower(trim($email))).'?s=82&d=wavatar';
-		$db->insert("INSERT INTO `user` (`email`, `username`, `portrait`, `passwd`) values(?,?,?,?)", $email, $username, $portrait, $password);
+		$db->insert('INSERT INTO `user` (`email`, `username`, `portrait`, `passwd`) values(?,?,?,?)', $email, $username, $portrait, $password);
 		//send_activatiton_code($mobile);
 	}
 }
@@ -102,11 +102,11 @@ function reg(Email $email,/* Mobile $mobile,*/ String $username, String $passwor
 */
 function activate(Mobile $mobile, Integer $code){
 	$db = new DataBase(DB_DNS, DB_USER, DB_PASSWORD);
-	$_code = $db->fetchColumn("SELECT `code` FROM `activation_code` WHERE `mobile` = ?", $mobile);
+	$_code = $db->fetchColumn('SELECT `code` FROM `activation_code` WHERE `mobile` = ?', $mobile);
 	if ($_code != $code->val) {
-		throw new ProException("Activation code is error", 106);
+		throw new ProException('Activation code is error', 106);
 	} else {
-		$db->exec("UPDATE `user` SET `status` = 1 WHERE `mobile` = ?", $mobile);
+		$db->exec('UPDATE `user` SET `status` = 1 WHERE `mobile` = ?', $mobile);
 	}
 }
 
@@ -117,14 +117,14 @@ function activate(Mobile $mobile, Integer $code){
 function send_activatiton_code(Mobile $mobile){
 	$db = new DataBase(DB_DNS, DB_USER, DB_PASSWORD);
 	$code = 2000;
-	if ($db->fetchColumn("SELECT count(*) FROM `activation_code` WHERE `mobile` = ?", $mobile) == 0) {
-		$db->insert("INSERT INTO `activation_code` (`mobile`, `code`) values(?,?)", $mobile, $code);
+	if ($db->fetchColumn('SELECT count(*) FROM `activation_code` WHERE `mobile` = ?', $mobile) == 0) {
+		$db->insert('INSERT INTO `activation_code` (`mobile`, `code`) values(?,?)', $mobile, $code);
 	} else {
-		$timestamp = $db->fetchColumn("SELECT `timestamp` FROM `activation_code` WHERE `mobile` = ?", $mobile);
+		$timestamp = $db->fetchColumn('SELECT `timestamp` FROM `activation_code` WHERE `mobile` = ?', $mobile);
 		if(time() - $timestamp > 60000) {
-			$db->exec("UPDATE `activation_code` SET `code` = ? WHERE `mobile` = ?", $code, $mobile);
+			$db->exec('UPDATE `activation_code` SET `code` = ? WHERE `mobile` = ?', $code, $mobile);
 		} else {
-			throw new ProException("Activation code is sent too frequently", 107);
+			throw new ProException('Activation code is sent too frequently', 107);
 		}
 	}
 }
@@ -136,12 +136,13 @@ function send_activatiton_code(Mobile $mobile){
 */
 function token(){
 	$db = new DataBase(DB_DNS, DB_USER, DB_PASSWORD);
-	$user = $db->fetch("SELECT `id`, `email`, `username`, `portrait` FROM `user` WHERE `id` = ?", getCurrentUserId());
+	$user = $db->fetch('SELECT `id`, `email`, `username`, `portrait` FROM `user` WHERE `id` = ?', getCurrentUserId());
 
 	if($user) {
-		$token = getToken($user['id'], $user['username'], $user['portrait']);
+		$token = ServerAPI::getInstance()->getToken($user['id'], $user['username'], $user['portrait']);
+
 		if (!$token) {
-			throw new Exception("API Server Error");
+			throw new Exception('API Server Error');
 		}
 
 		if ($token->code != 200) {
@@ -152,7 +153,7 @@ function token(){
 			return $token;
 		}
 	} else {
-		throw new ProException("user not found", 108);
+		throw new ProException('user not found', 108);
 	}
 }
 
@@ -163,13 +164,23 @@ function token(){
 */
 function profile(Integer $id){
 	$db = new DataBase(DB_DNS, DB_USER, DB_PASSWORD);
-	$user = $db->fetch("SELECT `id`, `username`, `portrait` FROM `user` WHERE `id` = ?", $id);
+	$user = $db->fetch('SELECT `id`, `username`, `portrait` FROM `user` WHERE `id` = ?', $id);
 
 	if ($user) {
 		return $user;
 	} else {
-		throw new ProException("user not found", 109);
+		throw new ProException('user not found', 109);
 	}
+}
+
+/**
+* 获取某人用户资料
+* @UserFunction(method = POST)
+* @CheckLogin
+*/
+function update_profile(String $username){
+	$db = new DataBase(DB_DNS, DB_USER, DB_PASSWORD);
+	$db->exec('UPDATE `user` SET `username`= ?  WHERE `id` = ?',$username, getCurrentUserId());
 }
 
 /**
@@ -179,38 +190,12 @@ function profile(Integer $id){
 */
 function friends(){
 	$db = new DataBase(DB_DNS, DB_USER, DB_PASSWORD);
-	$result = $db->fetchAll("SELECT `id`, `username`, `portrait` FROM `user`");
-	echo " ";
+	$result = $db->fetchAll('SELECT `id`, `username`, `portrait` FROM `user`');
 	return $result;
 }
 
-/**
-* 从融云API上进行用户授权，并获取token
-*/
-function getToken($id, $username, $portrait) {
-	$ch = curl_init();
-	curl_setopt($ch, CURLOPT_URL, RONGCLOUD_API_URL);
-	curl_setopt($ch, CURLOPT_POST, 1);
-	curl_setopt($ch, CURLOPT_POSTFIELDS, array('userId'=>$id, 'name'=>$username, 'portraitUri'=>$portrait));
-	curl_setopt($ch, CURLOPT_HTTPHEADER, array('appKey:'.RONGCLOUD_APP_KEY,'appSecret:'.RONGCLOUD_APP_SECRET));
-	curl_setopt($ch, CURLOPT_HEADER, false);
-	curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-	curl_setopt($ch, CURLOPT_DNS_USE_GLOBAL_CACHE, false);
-	curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-
-	$ret = curl_exec($ch);
-	if (false === $ret) {
-		$err =  curl_errno($ch);
-		echo $err;
-		curl_close($ch);
-		return false;
-	}
-	curl_close($ch);
-	return json_decode($ret);
-}
-
 function setUserCredential($userId){
-	$_temp = rand(1000,9999)."|rongcloud|$userId|".time();
+	$_temp = rand(1000,9999).'|rongcloud|'.$userId.'|'.time();
 	setcookie(AUTH_COOKIE_KEY, do_mencrypt($_temp, AUTH_COOKIE_KEY), time() + 3600*24*30);
 }
 
@@ -223,7 +208,7 @@ function getCurrentUserId(){
 			return $arr[2];
 		} 
 	}
-	throw new ProException("credential is error", 111);
+	throw new ProException('credential is error', 111);
 }
 
 function do_mencrypt($input, $key) {

@@ -50,6 +50,8 @@ class DataBase {
 			$arg = $args[$i];
 			if ($arg instanceof BaseType) {
 				$stmt->bindValue($i, $arg->val);
+			} else if (is_array($arg)){
+
 			} else {
 				$stmt->bindValue($i, $arg);
 			}
